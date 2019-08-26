@@ -4,21 +4,23 @@ module.exports = function filenameController(app, fileStoreSechma, apiResponse) 
     let multer = require('multer');
     let util = require('util');
 
-    // const ipfsAPI = require('ipfs-http-client');
-    // const ipfs = ipfsAPI('ipfs.infura.io', '5001', {protocol: 'https'})
+    const ipfsAPI = require('ipfs-http-client');
+    const ipfs = ipfsAPI('ipfs.infura.io', '5001', {protocol: 'https'})
 
     //////////////////////////////////////////////
     ///       Function to add file to IPFS    ///
     ////////////////////////////////////////////
 
     function addFileToIPFS(filename, cb) {
-        let FileToBeAdded = fs.readFileSync(filename);
+        let FileToBeAdded = fs.readFileSync('./uploads/'+filename);
+        console.log(FileToBeAdded, 'sssssss')
         let FileBuffer = new Buffer.from(FileToBeAdded);
         ipfs.add(FileBuffer, function (err, file) {
             if (err) {
                 console.log(err);
             }
-            cb(file)
+            console.log(file)
+           // cb(file)
         })
     }
 
@@ -41,7 +43,8 @@ module.exports = function filenameController(app, fileStoreSechma, apiResponse) 
         try {
             //================
             const file = req.file
-            console.log(file)
+            console.log(file.filename)
+            addFileToIPFS(file.filename )
             var filename = new fileStoreSechma();
             filename.fileName = 'req.body.aaa';
             filename.filenameText = req.body.filenameText;
@@ -53,7 +56,7 @@ module.exports = function filenameController(app, fileStoreSechma, apiResponse) 
             return;
         } catch (e) {
             apiResponse.reportError(e)
-            return res.status(500).json(apiResponse.sendReply(0, 'Static Page Error Occured'));
+            return res.status(500).json(apiResponse.sendReply(0, 'Copy website Error Occured'));
         }
     })
 
