@@ -4,15 +4,17 @@ module.exports = function filenameController(app, fileStoreSechma, apiResponse) 
     let multer = require('multer');
     let util = require('util');
 
-    const ipfsAPI = require('ipfs-http-client');
-    const ipfs = ipfsAPI('ipfs.infura.io', '5001', {protocol: 'https'})
 
     //////////////////////////////////////////////
     ///       Function to add file to IPFS    ///
     ////////////////////////////////////////////
 
     function addFileToIPFS(filename, cb) {
-        let FileToBeAdded = fs.readFileSync('./uploads/'+filename);
+        const ipfsAPI = require('ipfs-http-client');
+        const ipfs = ipfsAPI('ipfs.infura.io', '5001', {
+            protocol: 'https'
+        })
+        let FileToBeAdded = fs.readFileSync('./uploads/' + filename);
         console.log(FileToBeAdded, 'sssssss')
         let FileBuffer = new Buffer.from(FileToBeAdded);
         ipfs.add(FileBuffer, function (err, file) {
@@ -20,7 +22,7 @@ module.exports = function filenameController(app, fileStoreSechma, apiResponse) 
                 console.log(err);
             }
             console.log(file)
-           // cb(file)
+            // cb(file)
         })
     }
 
@@ -43,8 +45,8 @@ module.exports = function filenameController(app, fileStoreSechma, apiResponse) 
         try {
             //================
             const file = req.file
-            console.log(file.filename)
-            addFileToIPFS(file.filename )
+            console.log(file)
+            //addFileToIPFS(file.filename)
             var filename = new fileStoreSechma();
             filename.fileName = 'req.body.aaa';
             filename.filenameText = req.body.filenameText;
