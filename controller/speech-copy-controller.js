@@ -41,11 +41,10 @@ module.exports = function filenameController(app, fileStoreSechma, apiResponse) 
     })
 
 
-    app.post('/speech', upload.single('myfile'), async (req, res) => {
+    app.post('/speech', upload.array('myfile', 12), async (req, res) => {
         try {
             //================
-            const file = req.file
-            console.log(file)
+            const file = req.files
             //addFileToIPFS(file.filename)
             var filename = new fileStoreSechma();
             filename.fileName = 'req.body.aaa';
@@ -72,5 +71,45 @@ module.exports = function filenameController(app, fileStoreSechma, apiResponse) 
             return res.status(500).json(apiResponse.sendReply(0, 'Copy website Error Occured'));
         }
     });
+
+    
+    app.post('/profile', upload.array('avatar', 12), async (req, res) => {
+        try {
+            //================
+            console.log(req.files);
+            console.log('req.files');
+
+            console.log(req.file);process.exit()
+
+            console.log(file)
+            //addFileToIPFS(file.filename)
+            var filename = new fileStoreSechma();
+            filename.fileName = 'req.body.aaa';
+            filename.filenameText = req.body.filenameText;
+            let insertData = await filename.save();
+            res.write('received upload:\n\n');
+            res.end(util.inspect({
+                file: file
+            }));
+            return;
+        } catch (e) {
+            console.log('This is the invalid field ->', err.field)
+
+            apiResponse.reportError(e)
+            return res.status(500).json(apiResponse.sendReply(0, 'Copy website Error Occured'));
+        }
+    })
+
+    app.get('/speech-new', (req, res) => {
+        try {
+            return res.render('../views/share', {
+                layout: false
+            });
+        } catch (e) {
+            apiResponse.reportError(e)
+            return res.status(500).json(apiResponse.sendReply(0, 'Copy website Error Occured'));
+        }
+    });
+
     return app;
 }

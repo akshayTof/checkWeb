@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Chapter 12</title>
+        <style type="text/css" media="screen">
+            #drop-zone {
+                min-height: 300px;
+                max-width: 300px;
+                padding: 15px;
+                border: 4px dashed #999;
+            }
+            #drop-zone img {
+                max-width: 100%;
+                display: block;
+            }
+            .over {
+                border-color: #333;
+                background: #ddd;
+            }
+            ul {
+                padding: 0;
+                list-style: none;
+                color: #333;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="drop-zone">
+            <script id="handlebar-template" type="text/x-handlebars-temlate">
+                <div class="img-slot">
+                    {{#each this}}
+                    <img src="{{source}}" alt="{{name}}">
+                    <ul>
+                        <li>{{name}}</li>
+                        <li>{{type}}</li>
+                        <li>{{size}}</li>
+                    </ul>
+                    {{/each}}
+                </div>
+
+            </script>
+        </div><!-- /#drop-zone -->
+
+        <script src="bower_components/handlebars/handlebars.min.js"></script>
+        <script>
+(function(){
+    "use strict";
+
+    // define the drop zone
+    var dropZone = document.getElementById("drop-zone");
+
+    // add  a drag over event to the zone
+    dropZone.addEventListener("dragover", function(e){
+        e.preventDefault();
+
+        // add a hover class so we can see it's working
+        dropZone.setAttribute("class", "over");
+    }, false);
+
+    // on file drop grab all available image information
+    dropZone.addEventListener("drop", function(e){
+        "use strict";
+
+        e.preventDefault();
+
+        var
+        reader,
+        files = e.dataTransfer.files,
+        fileCount = files.length,
+        i;
+
+        // get the Handlebars template
+        var handlebarTemplate = document.getElementById("handlebar-template");
+        var template = Handlebars.compile(handlebarTemplate.innerHTML);
+
+        if(fileCount > 0){
+            var data = [], currObj = {};
+
+            for(i = 0; i < fileCount; i = i + 1){
+                var file = files[i];
+
+                reader = new FileReader();
+
+                // remove the hover class
+                dropZone.removeAttribute("class");
+
+                reader.onload = function(e){
+                    currObj = {
+                        name : file.name,
+                        size : file.size,
+                        type : file.type,
+                        source: e.target.result
+                    };
+                    data.push(currObj);
+
+                    // PROBLEM, how to load template once all files are loaded
+                    // because leaving it like this will load some files multiple times
+                    // also name, size and type attributes will be overwritten so I will get
+                    // same attributes for all loaded images.
+                    dropZone.innerHTML += ( template(data) );
+                };
+                // render the image as a data url
+                reader.readAsDataURL(file);
+            } //end for loop
+            //console.log(data); I got this! See above EDIT
+
+
+        } //end if
+    }, false); //end listener
+})();
+
+        </script>
+
+    </body>
+</html>

@@ -136,7 +136,7 @@ function drop(ev) {
     // files is a FileList of File objects. List some properties.
     var output = [];
     for (var i = 0, f; f = files[i]; i++) {
-      output.push('<input type="file" name="myfile1" value=', escape(f.name), '(', f.type || 'n/a', ') />');
+      output.push('<input type="file" name="myfile" value=', escape(f.name), '(', f.type || 'n/a', ') />');
     }
     document.getElementById('list').innerHTML = output.join('');
   }
